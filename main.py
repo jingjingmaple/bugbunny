@@ -1,6 +1,6 @@
 import arcade
 
-SPRITE_SCALING = 0.25
+SPRITE_SCALING = 0.15
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -51,11 +51,12 @@ class WorldWindow(arcade.Window):
 
 		self.all_sprites_list = arcade.SpriteList()
 		self.wall_list = arcade.SpriteList()
+		self.stair_list = arcade.SpriteList()
 
 		self.score = 0
 		self.player_sprite = Player()
-		self.player_sprite.center_x = SCREEN_WIDTH / 2
-		self.player_sprite.center_y = 315
+		self.player_sprite.center_x = 900
+		self.player_sprite.center_y = 279
 		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
 		self.all_sprites_list.append(self.player_sprite)
 
@@ -65,6 +66,19 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 200
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+
+		for x in range(0, 170, 64):
+			wall = arcade.Sprite("images/floor.png", 0.6)
+			wall.center_x = x
+			wall.center_y = 400
+			self.all_sprites_list.append(wall)
+			self.wall_list.append(wall)
+
+		stair = arcade.Sprite("images/stair.png",0.7)
+		stair.center_x = 570
+		stair.center_y = 320
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
 
 class Player(arcade.Sprite):
 	def __init__(self):
@@ -78,8 +92,16 @@ class Player(arcade.Sprite):
 		global FRAME, LAST_FRAME, CHANGE_LEFT,CHANGE_RIGHT
 		self.center_x += self.change_x
 		self.center_y += self.change_y
-		print(FRAME)
- 
+		#print(FRAME)
+		if (self.center_x == 700):
+			self.center_y += 55
+			self.center_x +=1
+		if (self.center_x == 655):
+			self.center_y += 55
+			self.center_x +=1
+		'''if (self.center_x >= 540) and (self.center_x <=600):
+			self.center_y += 20'''
+		print(self.center_x,self.center_y)
 		if self.change_x < 0:
 			if CHANGE_LEFT:
 				self.texture = self.texture_left1
@@ -87,6 +109,7 @@ class Player(arcade.Sprite):
 				self.texture = self.texture_left
 			if FRAME%30==0:
 				CHANGE_LEFT = not CHANGE_LEFT
+			
 			
 		if self.change_x > 0:
 			if CHANGE_RIGHT:
