@@ -4,13 +4,17 @@ SPRITE_SCALING = 0.15
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
+# Physics
 
+JUMP_SPEED = 14
+GRAVITY = 0.5
 MOVEMENT_SPEED = 5
 FRAME = 0
 LAST_FRAME = 0
 CHANGE_LEFT = True
 CHANGE_RIGHT = True
-
+LAST_X=0
+LAST_Y=0
 class WorldWindow(arcade.Window):
 	def __init__(self, width, height):
 		super().__init__(width, height)
@@ -79,7 +83,10 @@ class WorldWindow(arcade.Window):
 		stair.center_y = 320
 		self.all_sprites_list.append(stair)
 		self.stair_list.append(stair)
-
+		self.physics_engine = \
+			arcade.PhysicsEnginePlatformer(self.player_sprite,
+										   self.wall_list,
+										   gravity_constant=GRAVITY)
 class Player(arcade.Sprite):
 	def __init__(self):
 		super().__init__()
@@ -89,20 +96,32 @@ class Player(arcade.Sprite):
 		self.texture_right1 = arcade.load_texture("images/rabbit2.png", scale=SPRITE_SCALING)
 		self.texture = self.texture_right
 	def update(self):
-		global FRAME, LAST_FRAME, CHANGE_LEFT,CHANGE_RIGHT
+		global FRAME, LAST_FRAME, CHANGE_LEFT,CHANGE_RIGHT, LAST_X, LAST_Y
 		self.center_x += self.change_x
 		self.center_y += self.change_y
 		#print(FRAME)
-		if (self.center_x == 700):
-			self.center_y += 55
-			self.center_x +=1
-		if (self.center_x == 655):
-			self.center_y += 55
-			self.center_x +=1
+		
 		'''if (self.center_x >= 540) and (self.center_x <=600):
 			self.center_y += 20'''
-		print(self.center_x,self.center_y)
+		if self.center_x != LAST_X or self.center_y != LAST_Y:
+			print(self.center_x,self.center_y)
+		LAST_X = self.center_x
+		LAST_Y = self.center_y
 		if self.change_x < 0:
+			if (self.center_x == 700):
+				self.center_y += 55
+				self.center_x -=5
+			if (self.center_x == 655):
+				self.center_y += 55
+				self.center_x -=5
+			if (self.center_x == 615):
+				self.center_y += 47
+				self.center_x -=5
+			if (self.center_x == 540):
+				self.center_y += 30
+				self.center_x -=5
+
+
 			if CHANGE_LEFT:
 				self.texture = self.texture_left1
 			else:
@@ -112,6 +131,20 @@ class Player(arcade.Sprite):
 			
 			
 		if self.change_x > 0:
+			if (self.center_x == 700):
+				self.center_y -= 55
+				self.center_x +=5
+			if (self.center_x == 655):
+				self.center_y -= 55
+				self.center_x +=5
+			if (self.center_x == 615):
+				self.center_y -= 47
+				self.center_x +=5
+			if (self.center_x == 540):
+				self.center_y -= 30
+				self.center_x +=5
+
+
 			if CHANGE_RIGHT:
 				self.texture = self.texture_right1
 			else:
