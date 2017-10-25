@@ -30,7 +30,7 @@ class WorldWindow(arcade.Window):
 		self.all_sprites_list.draw()
 
 	def update(self, delta_time):
-
+		self.physics_engine.update()
 		self.all_sprites_list.update()
 
 	def on_key_press(self, key, modifiers):
@@ -125,6 +125,12 @@ class WorldWindow(arcade.Window):
 		self.all_sprites_list.append(stair)
 		self.stair_list.append(stair)
 
+		wall = arcade.Sprite("images/sta.png", 0.8) #64x64 to 32x32
+		wall.center_x = 356
+		wall.center_y = 112
+		self.all_sprites_list.append(wall)
+		self.wall_list.append(wall)
+
 		for x in range(500, 700, 32):
 			wall = arcade.Sprite("images/brick.png", 0.5) #64x64 to 32x32
 			wall.center_x = x
@@ -191,9 +197,9 @@ class WorldWindow(arcade.Window):
 		self.physics_engine = \
 			arcade.PhysicsEnginePlatformer(self.player_sprite,
 										   self.wall_list,
-										   gravity_constant=GRAVITY)'''
+										   gravity_constant=GRAVITY)
 		
-		print(len(self.wall_list))
+		'''print(len(self.wall_list))
 		print(self.wall_list[10].height)'''
 	def stair(x_left,y_right):
 		for _stair in self.stair_list:
