@@ -1,5 +1,5 @@
 import arcade
-
+from pprint import pprint
 SPRITE_SCALING = 0.15
 
 SCREEN_WIDTH = 1280
@@ -39,11 +39,14 @@ class WorldWindow(arcade.Window):
 		elif key == arcade.key.DOWN:
 			self.player_sprite.change_y = -MOVEMENT_SPEED'''
 		#elif
+		'''if key == arcade.key.UP:
+			if self.physics_engine.can_jump():
+				self.player_sprite.change_y = JUMP_SPEED
+		el'''
 		if key == arcade.key.LEFT:
 			self.player_sprite.change_x = -MOVEMENT_SPEED
 		elif key == arcade.key.RIGHT:
 			self.player_sprite.change_x = MOVEMENT_SPEED
-
 	def on_key_release(self, key, modifiers):
  
 		#if key == arcade.key.UP or key == arcade.key.DOWN:
@@ -58,7 +61,7 @@ class WorldWindow(arcade.Window):
 		self.stair_list = arcade.SpriteList()
 
 		self.score = 0
-		self.player_sprite = Player()
+		self.player_sprite = Player(stair_list)
 		self.player_sprite.center_x = 900
 		self.player_sprite.center_y = 279
 		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
@@ -70,6 +73,7 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 200
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			print(x)
 
 		for x in range(0, 170, 64):
 			wall = arcade.Sprite("images/floor.png", 0.6)
@@ -83,10 +87,16 @@ class WorldWindow(arcade.Window):
 		stair.center_y = 320
 		self.all_sprites_list.append(stair)
 		self.stair_list.append(stair)
-		self.physics_engine = \
+		'''self.physics_engine = \
 			arcade.PhysicsEnginePlatformer(self.player_sprite,
 										   self.wall_list,
-										   gravity_constant=GRAVITY)
+										   gravity_constant=GRAVITY)'''
+		print(len(self.wall_list))
+		print(self.wall_list[10].height)
+	def stair(x_left,y_right):
+		for _stair in self.stair_list:
+			if x_left < (_stair.center_x+(_stair.width/2)):
+				return True
 class Player(arcade.Sprite):
 	def __init__(self):
 		super().__init__()
@@ -100,7 +110,7 @@ class Player(arcade.Sprite):
 		self.center_x += self.change_x
 		self.center_y += self.change_y
 		#print(FRAME)
-		
+		#WorldWindow.stair(self.center_x,self.center_y)
 		'''if (self.center_x >= 540) and (self.center_x <=600):
 			self.center_y += 20'''
 		if self.center_x != LAST_X or self.center_y != LAST_Y:
@@ -108,7 +118,7 @@ class Player(arcade.Sprite):
 		LAST_X = self.center_x
 		LAST_Y = self.center_y
 		if self.change_x < 0:
-			if (self.center_x == 700):
+			'''if (self.center_x == 700):
 				self.center_y += 55
 				self.center_x -=5
 			if (self.center_x == 655):
@@ -119,7 +129,7 @@ class Player(arcade.Sprite):
 				self.center_x -=5
 			if (self.center_x == 540):
 				self.center_y += 30
-				self.center_x -=5
+				self.center_x -=5'''
 
 
 			if CHANGE_LEFT:
@@ -131,7 +141,7 @@ class Player(arcade.Sprite):
 			
 			
 		if self.change_x > 0:
-			if (self.center_x == 700):
+			'''if (self.center_x == 700):
 				self.center_y -= 55
 				self.center_x +=5
 			if (self.center_x == 655):
@@ -142,7 +152,7 @@ class Player(arcade.Sprite):
 				self.center_x +=5
 			if (self.center_x == 540):
 				self.center_y -= 30
-				self.center_x +=5
+				self.center_x +=5'''
 
 
 			if CHANGE_RIGHT:
