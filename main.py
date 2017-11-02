@@ -89,7 +89,6 @@ class WorldWindow(arcade.Window):
 		'''elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
 			self.player_sprite.change_x = 0'''
 	def setup(self):
-
 		self.all_sprites_list = arcade.SpriteList()
 		self.wall_list = arcade.SpriteList()
 		self.stair_list = arcade.SpriteList()
@@ -100,12 +99,8 @@ class WorldWindow(arcade.Window):
 		
 
 		self.score = 0
-		self.player_sprite = Player()
-		self.player_sprite.center_x = 48
-		self.player_sprite.center_y = 144
-		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
-		self.add_map(self.player_sprite.center_x,self.player_sprite.center_y,self.player_sprite.width,self.player_sprite.height,"player")
-		self.all_sprites_list.append(self.player_sprite)
+		
+		
 		
 
 
@@ -128,37 +123,45 @@ class WorldWindow(arcade.Window):
 			self.add_map(x,72,wall.width,wall.height,"floor")
 		
 		#gate
-			#base floor
-			stair = arcade.Sprite("images/tileset/gate.png",1)
-			stair.center_x = 240
-			stair.center_y = 168
-			self.all_sprites_list.append(stair)
-			self.stair_list.append(stair)
-			self.add_map(240,168,stair.width,stair.height,"gate")
+		#base floor
+		stair = arcade.Sprite("images/tileset/gate.png",1)
+		stair.center_x = 240
+		stair.center_y = 168
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(240,168,stair.width,stair.height,"gate")
+		block = self.map.convertToBlock(stair.center_x,stair.center_y,stair.width,stair.height)
+		self.map.gate_list2.append({"x":block["x"],"y":block["y"]})
 
-			#second floor
-			stair = arcade.Sprite("images/tileset/gate.png",1)
-			stair.center_x = 48
-			stair.center_y = 360
-			self.all_sprites_list.append(stair)
-			self.stair_list.append(stair)
-			self.add_map(48,360,stair.width,stair.height,"gate")
+		#second floor
+		stair = arcade.Sprite("images/tileset/gate.png",1)
+		stair.center_x = 48
+		stair.center_y = 360
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(48,360,stair.width,stair.height,"gate")
+		block = self.map.convertToBlock(stair.center_x,stair.center_y,stair.width,stair.height)
+		self.map.gate_list2.append({"x":block["x"],"y":block["y"]})
 
-			#third floor
-			stair = arcade.Sprite("images/tileset/gate.png",1)
-			stair.center_x = 144
-			stair.center_y = 552
-			self.all_sprites_list.append(stair)
-			self.stair_list.append(stair)
-			self.add_map(144,552,stair.width,stair.height,"gate")
+		#third floor
+		stair = arcade.Sprite("images/tileset/gate.png",1)
+		stair.center_x = 144
+		stair.center_y = 552
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(144,552,stair.width,stair.height,"gate")
+		block = self.map.convertToBlock(stair.center_x,stair.center_y,stair.width,stair.height)
+		self.map.gate_list2.append({"x":block["x"],"y":block["y"]})
 
-			#fourth floor
-			stair = arcade.Sprite("images/tileset/gate.png",1)
-			stair.center_x = 48
-			stair.center_y = 744
-			self.all_sprites_list.append(stair)
-			self.stair_list.append(stair)
-			self.add_map(48,744,stair.width,stair.height,"gate")
+		#fourth floor
+		stair = arcade.Sprite("images/tileset/gate.png",1)
+		stair.center_x = 48
+		stair.center_y = 744
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(48,744,stair.width,stair.height,"gate")
+		block = self.map.convertToBlock(stair.center_x,stair.center_y,stair.width,stair.height)
+		self.map.gate_list2.append({"x":block["x"],"y":block["y"]})
 
 		#upper pedan
 		for x in range(24, 1152, 48):
@@ -317,8 +320,12 @@ class WorldWindow(arcade.Window):
 		
 		'''print(len(self.wall_list))
 		print(self.wall_list[10].height)'''
-		
-
+		self.player_sprite = Player()
+		self.player_sprite.center_x = 48
+		self.player_sprite.center_y = 144
+		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
+		self.add_map(self.player_sprite.center_x,self.player_sprite.center_y,self.player_sprite.width,self.player_sprite.height,"player")
+		self.all_sprites_list.append(self.player_sprite)
 				
 	def add_map(self,center_x,center_y,width,height,typename):
 		if width == blocksize and height == blocksize:
@@ -344,6 +351,7 @@ def main():
 	window = WorldWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
 	window.setup()
 	jing = window.map.map_list
+	var_dump(window.map.gate_list2)
 	#var_dump(jing)
 	#print(len(jing))
 	

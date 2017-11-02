@@ -21,6 +21,8 @@ class Map():
 			self.map_list.append([])
 			for y in range(0,18):
 				self.map_list[x].append({"x":0,"y":0,"type":""})
+		
+		self.gate_list2 = []
 	def convertToCenter(self,x):
 		start_x = x[0]*48
 		end_x = (x[-1]*48) + 48
@@ -49,6 +51,10 @@ class Map():
 				y.append(ky)
 			print("ToBlock: ",x)
 			return {"x":x,"y":y}
+	def findGate(self,x,y):
+		for p in range(0,len(self.gate_list2)):
+			if x in self.gate_list2[p]["x"] and y in self.gate_list2[p]["y"]:
+				return p
 
 	def movement(self,_object,_type,direction):
 		if _type == "player":
@@ -79,6 +85,12 @@ class Map():
 					if self.map_list[x[0]-1][y[0]]["type"] == "stair" or self.map_list[x[0]-1][y[0]]["type"] == "floor":
 						_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
 						_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
+				if self.map_list[x[0]][y[0]]["type"] == "gate" and self.map_list[x[-1]][y[0]]["type"] == "gate":
+					now_gate = self.findGate(x[0],y[0])
+					if (now_gate+1) < len(self.gate_list2):
+						print([self.gate_list2[now_gate+1]["x"][0],(self.gate_list2[now_gate+1]["x"][0])+2])
+						_object.center_x = self.convertToCenter([self.gate_list2[now_gate+1]["x"][0],(self.gate_list2[now_gate+1]["x"][0])+1])
+						_object.center_y = self.convertToCenter([self.gate_list2[now_gate+1]["y"][0],self.gate_list2[now_gate+1]["y"][0]+1])
 			elif direction == "DOWN":
 				print("fuck| 1:",self.map_list[x[0]][y[0]-1]["type"]," 2:",self.map_list[x[-1]][y[0]-1]["type"])
 				if not (self.map_list[x[0]][y[0]-1]["type"] == "floor" and self.map_list[x[-1]][y[0]-1]["type"] == "floor"):
@@ -90,7 +102,11 @@ class Map():
 						if self.map_list[x[-1]-1][y[0]-2]["type"] == "stair" or self.map_list[x[-1]-1][y[0]-2]["type"] == "floor":
 							_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
 							_object.center_y = self.convertToCenter([y[0]-1,y[-1]-1])
-
+				if self.map_list[x[0]][y[0]]["type"] == "gate" and self.map_list[x[-1]][y[0]]["type"] == "gate":
+					now_gate = self.findGate(x[0],y[0])
+					if (now_gate) > 0:
+						_object.center_x = self.convertToCenter([self.gate_list2[now_gate-1]["x"][0],(self.gate_list2[now_gate-1]["x"][0])+1])
+						_object.center_y = self.convertToCenter([self.gate_list2[now_gate-1]["y"][0],self.gate_list2[now_gate-1]["y"][0]+1])
 
 		
 
