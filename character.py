@@ -16,6 +16,7 @@ LAST_X=0
 LAST_Y=0
 class Map():
 	def __init__(self):
+		
 		self.map_list = [[]]
 		for x in range(0,24):
 			self.map_list.append([])
@@ -27,7 +28,6 @@ class Map():
 		start_x = x[0]*48
 		end_x = (x[-1]*48) + 48
 		center_x = (start_x + end_x)/2
-		print("ToCenter: ",center_x)
 		return center_x
 	def convertToBlock(self,center_x,center_y,width,height):
 		blocksize = 48
@@ -49,7 +49,6 @@ class Map():
 			for ky in range(int(b1/blocksize),int(b2/blocksize)):
 				#self.fucking_wall_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
 				y.append(ky)
-			print("ToBlock: ",x)
 			return {"x":x,"y":y}
 	def findGate(self,x,y):
 		for p in range(0,len(self.gate_list2)):
@@ -111,8 +110,9 @@ class Map():
 		
 
 class Player(arcade.Sprite):
-	def __init__(self):
+	def __init__(self,world):
 		super().__init__()
+		self.world = world
 		self.texture_left = arcade.load_texture("images/tileset/rabbit1.png", mirrored=True, scale=SPRITE_SCALING)
 		self.texture_right = arcade.load_texture("images/tileset/rabbit1.png", scale=SPRITE_SCALING)
 		self.texture_left1 = arcade.load_texture("images/tileset/rabbit2.png", mirrored=True, scale=SPRITE_SCALING)
@@ -122,6 +122,13 @@ class Player(arcade.Sprite):
 		self.CHANGE_RIGHT = True
 	def update(self):
 		global FRAME, LAST_FRAME, CHANGE_LEFT,CHANGE_RIGHT, LAST_X, LAST_Y
+		maplist = self.world.map.map_list
+		now_position = Map.convertToBlock(self,self.center_x,self.center_y,self.width,self.height)
+
+		if maplist[now_position["x"][0]][now_position["y"][0]]["type"] == "carrot" or maplist[now_position["x"][-1]][now_position["y"][0]]["type"] == "carrot":
+			print("carrotttttttt")
+			self.world.carrot_list[0]["obj"].kill()
+
 		#self.center_x += self.change_x
 		#self.center_y += self.change_y
 		if self.center_x != LAST_X or self.center_y != LAST_Y:
@@ -155,4 +162,9 @@ class Player(arcade.Sprite):
 			self.top = SCREEN_HEIGHT - 1
 		LAST_FRAME = FRAME
 		FRAME +=1
-
+class Carrot(arcade.Sprite):
+	def __init__(self,x,y):
+		super().__init__()
+		self.texture = arcade.load_texture("images/tileset/carrot.png", scale=1)
+		self.center_x = x
+		self.center_y = y

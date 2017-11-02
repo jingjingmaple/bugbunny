@@ -1,7 +1,7 @@
 import arcade
 from pprint import pprint
 from var_dump import var_dump
-from character import Player, Map
+from character import Player, Map, Carrot
 
 
 SPRITE_SCALING = 1
@@ -89,13 +89,18 @@ class WorldWindow(arcade.Window):
 		'''elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
 			self.player_sprite.change_x = 0'''
 	def setup(self):
+		self.map = Map()
 		self.all_sprites_list = arcade.SpriteList()
 		self.wall_list = arcade.SpriteList()
 		self.stair_list = arcade.SpriteList()
 		self.gate_list = arcade.SpriteList()
+		self.carrot_list = []
+		carrot = Carrot(168,120)
+		self.carrot_list.append({"obj":carrot,"x":168,"y":120})
+		self.all_sprites_list.append(carrot)
+		self.add_map(168,120,carrot.width,carrot.height,"carrot")
 
-
-		self.map = Map()
+		
 		
 
 		self.score = 0
@@ -320,7 +325,7 @@ class WorldWindow(arcade.Window):
 		
 		'''print(len(self.wall_list))
 		print(self.wall_list[10].height)'''
-		self.player_sprite = Player()
+		self.player_sprite = Player(self)
 		self.player_sprite.center_x = 48
 		self.player_sprite.center_y = 144
 		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
@@ -351,7 +356,7 @@ def main():
 	window = WorldWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
 	window.setup()
 	jing = window.map.map_list
-	var_dump(window.map.gate_list2)
+	#var_dump(window.map.gate_list2)
 	#var_dump(jing)
 	#print(len(jing))
 	
