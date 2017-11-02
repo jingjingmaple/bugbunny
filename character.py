@@ -20,25 +20,77 @@ class Map():
 		for x in range(0,24):
 			self.map_list.append([])
 			for y in range(0,18):
-				self.map_list[x].append(None)
-	def convertToCenter(x):
+				self.map_list[x].append({"x":0,"y":0,"type":""})
+	def convertToCenter(self,x):
 		start_x = x[0]*48
 		end_x = (x[-1]*48) + 48
 		center_x = (start_x + end_x)/2
-		return x
+		print("ToCenter: ",center_x)
+		return center_x
+	def convertToBlock(self,center_x,center_y,width,height):
+		blocksize = 48
+		if width == blocksize and height == blocksize:
+			x = int(center_x/blocksize)
+			y = int(center_y/blocksize)
+			#self.fucking_wall_list[x][y] = {"x":center_x,"y":center_y,"type":typename}
+			return {"x":x,"y":y}
+		else:
+			#240x 168y
+			a1 = center_x - (width/2)
+			a2 = center_x + (width/2)
+			b1 = center_y - (height/2)
+			b2 = center_y + (height/2)
+			x=[]
+			y=[]
+			for k in range(int(a1/blocksize),int(a2/blocksize)):
+				x.append(k)
+			for ky in range(int(b1/blocksize),int(b2/blocksize)):
+				#self.fucking_wall_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
+				y.append(ky)
+			print("ToBlock: ",x)
+			return {"x":x,"y":y}
 
-	def movement(self,_object,x,y,_type,direction):
+	def movement(self,_object,_type,direction):
 		if _type == "player":
 			'''if direction == "UP":
 				
 			elif direction == "DOWN"'''
-
+			block = self.convertToBlock(_object.center_x,_object.center_y,_object.width,_object.height)
+			x = block["x"]
+			y = block["y"]
 			if direction == "LEFT":
-				if self.map_list[x[0]-len(x)][y[0]-1]["type"] == "floor":
-					_object.center_x = self.convertToCenter([x[0]-len(x),x[-1]-len(x)])
+				if self.map_list[x[-1]-1][y[0]-1]["type"] == "floor":
+					_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
+					_object.change_x = -5
+					_object.CHANGE_LEFT = not _object.CHANGE_LEFT
 			elif direction == "RIGHT":
-				if self.map_list[x[-1]+len(x)][y[0]-1]["type"] == "floor":
-					_object.center_x = self.convertToCenter([x[0]+len(x),x[-1]+len(x)])
+				if self.map_list[x[0]+1][y[0]-1]["type"] == "floor":
+					print("fuck",self.convertToCenter([x[0]+1,x[-1]+1]),"fuck")
+					_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
+					_object.change_x = 5
+					_object.CHANGE_RIGHT = not _object.CHANGE_RIGHT
+
+			elif direction == "UP":
+				if _object.change_x > 0: #RIGHT
+					if self.map_list[x[-1]+1][y[0]]["type"] == "stair" or self.map_list[x[-1]+1][y[0]]["type"] == "floor":
+						_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
+						_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
+				if _object.change_x < 0: #LEFT
+					if self.map_list[x[0]-1][y[0]]["type"] == "stair" or self.map_list[x[0]-1][y[0]]["type"] == "floor":
+						_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
+						_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
+			elif direction == "DOWN":
+				print("fuck| 1:",self.map_list[x[0]][y[0]-1]["type"]," 2:",self.map_list[x[-1]][y[0]-1]["type"])
+				if not (self.map_list[x[0]][y[0]-1]["type"] == "floor" and self.map_list[x[-1]][y[0]-1]["type"] == "floor"):
+					if _object.change_x > 0: #RIGHT
+						if self.map_list[x[0]+1][y[0]-2]["type"] == "stair" or self.map_list[x[0]+1][y[0]-2]["type"] == "floor":
+							_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
+							_object.center_y = self.convertToCenter([y[0]-1,y[-1]-1])
+					if _object.change_x < 0: #LEFT
+						if self.map_list[x[-1]-1][y[0]-2]["type"] == "stair" or self.map_list[x[-1]-1][y[0]-2]["type"] == "floor":
+							_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
+							_object.center_y = self.convertToCenter([y[0]-1,y[-1]-1])
+
 
 		
 

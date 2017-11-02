@@ -66,22 +66,26 @@ class WorldWindow(arcade.Window):
 			self.player_sprite.change_x = MOVEMENT_SPEED
 		'''
 		if key == arcade.key.LEFT:
-			self.player_sprite.center_x -= 96
+			#self.player_sprite.center_x -= 96
 			#self.player_sprite.angle = 35
-			self.player_sprite.change_x = -5
-			self.player_sprite.CHANGE_LEFT = not self.player_sprite.CHANGE_LEFT
+			#self.player_sprite.change_x = -5
+			#self.player_sprite.CHANGE_LEFT = not self.player_sprite.CHANGE_LEFT
+			self.map.movement(self.player_sprite,"player","LEFT")
 		elif key == arcade.key.RIGHT:
-			self.player_sprite.center_x += 96
-			self.player_sprite.change_x = 5
-			self.player_sprite.CHANGE_RIGHT = not self.player_sprite.CHANGE_RIGHT
+			#self.player_sprite.center_x += 96
+			#self.player_sprite.change_x = 5
+			#self.player_sprite.CHANGE_RIGHT = not self.player_sprite.CHANGE_RIGHT
+			self.map.movement(self.player_sprite,"player","RIGHT")
 	def on_key_release(self, key, modifiers):
  
 		if key == arcade.key.UP:
-			self.player_sprite.center_y += 48
+			'''self.player_sprite.center_y += 48
 			self.player_sprite.center_x += 48
-			print("fuck")
+			print("fuck")'''
+			self.map.movement(self.player_sprite,"player","UP")
 		elif key == arcade.key.DOWN:
-			self.player_sprite.center_y -= 48
+			#self.player_sprite.center_y -= 48
+			self.map.movement(self.player_sprite,"player","DOWN")
 		'''elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
 			self.player_sprite.change_x = 0'''
 	def setup(self):
