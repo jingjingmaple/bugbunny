@@ -64,26 +64,29 @@ class Map():
 			x = block["x"]
 			y = block["y"]
 			if direction == "LEFT":
-				if self.map_list[x[-1]-1][y[0]-1]["type"] == "floor":
-					_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
-					_object.change_x = -5
-					_object.CHANGE_LEFT = not _object.CHANGE_LEFT
+				if x[0] != 0:
+					if self.map_list[x[-1]-1][y[0]-1]["type"] == "floor":
+						_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
+						_object.change_x = -5
+						_object.CHANGE_LEFT = not _object.CHANGE_LEFT
 			elif direction == "RIGHT":
-				if self.map_list[x[0]+1][y[0]-1]["type"] == "floor":
-					print("fuck",self.convertToCenter([x[0]+1,x[-1]+1]),"fuck")
-					_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
-					_object.change_x = 5
-					_object.CHANGE_RIGHT = not _object.CHANGE_RIGHT
+				if x[-1] != len(self.map_list)-1:
+					if self.map_list[x[0]+1][y[0]-1]["type"] == "floor":
+						print("fuck",self.convertToCenter([x[0]+1,x[-1]+1]),"fuck")
+						_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
+						_object.change_x = 5
+						_object.CHANGE_RIGHT = not _object.CHANGE_RIGHT
 
 			elif direction == "UP":
-				if _object.change_x > 0: #RIGHT
-					if self.map_list[x[-1]+1][y[0]]["type"] == "stair" or self.map_list[x[-1]+1][y[0]]["type"] == "floor":
-						_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
-						_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
-				if _object.change_x < 0: #LEFT
-					if self.map_list[x[0]-1][y[0]]["type"] == "stair" or self.map_list[x[0]-1][y[0]]["type"] == "floor":
-						_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
-						_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
+				if (x[0] != 0) and (x[-1] != len(self.map_list)-1):
+					if _object.change_x > 0: #RIGHT
+						if self.map_list[x[-1]+1][y[0]]["type"] == "stair" or self.map_list[x[-1]+1][y[0]]["type"] == "floor":
+							_object.center_x = self.convertToCenter([x[0]+1,x[-1]+1])
+							_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
+					if _object.change_x < 0: #LEFT
+						if self.map_list[x[0]-1][y[0]]["type"] == "stair" or self.map_list[x[0]-1][y[0]]["type"] == "floor":
+							_object.center_x = self.convertToCenter([x[0]-1,x[-1]-1])
+							_object.center_y = self.convertToCenter([y[0]+1,y[-1]+1])
 				if self.map_list[x[0]][y[0]]["type"] == "gate" and self.map_list[x[-1]][y[0]]["type"] == "gate":
 					now_gate = self.findGate(x[0],y[0])
 					if (now_gate+1) < len(self.gate_list2):
@@ -125,9 +128,15 @@ class Player(arcade.Sprite):
 		maplist = self.world.map.map_list
 		now_position = Map.convertToBlock(self,self.center_x,self.center_y,self.width,self.height)
 
-		if maplist[now_position["x"][0]][now_position["y"][0]]["type"] == "carrot" or maplist[now_position["x"][-1]][now_position["y"][0]]["type"] == "carrot":
+		if maplist[now_position["x"][0]][now_position["y"][0]]["type"] == "carrot":
+			maplist[now_position["x"][0]][now_position["y"][0]]["obj"].kill()
+			maplist[now_position["x"][0]][now_position["y"][0]] = {"x":0,"y":0,"type":"","obj":None}
 			print("carrotttttttt")
-			self.world.carrot_list[0]["obj"].kill()
+	
+		if maplist[now_position["x"][-1]][now_position["y"][0]]["type"] == "carrot":
+			print("carrotttttttt")
+			maplist[now_position["x"][-1]][now_position["y"][0]]["obj"].kill()
+			maplist[now_position["x"][-1]][now_position["y"][0]] = {"x":0,"y":0,"type":"","obj":None}
 
 		#self.center_x += self.change_x
 		#self.center_y += self.change_y
@@ -162,6 +171,50 @@ class Player(arcade.Sprite):
 			self.top = SCREEN_HEIGHT - 1
 		LAST_FRAME = FRAME
 		FRAME +=1
+
+class Enemy(arcade.Sprite):
+	def __init__(self,world):
+		super().__init__()
+		self.world = world
+		self.texture_left = arcade.load_texture("images/tileset/soldier_walk1.png", mirrored=True, scale=SPRITE_SCALING)
+		self.texture_right = arcade.load_texture("images/tileset/soldier_walk1.png", scale=SPRITE_SCALING)
+		self.texture_left1 = arcade.load_texture("images/tileset/soldier_walk2.png", mirrored=True, scale=SPRITE_SCALING)
+		self.texture_right1 = arcade.load_texture("images/tileset/soldier_walk2.png", scale=SPRITE_SCALING)
+		self.texture = self.texture_right
+		self.CHANGE_LEFT = True
+		self.CHANGE_RIGHT = True
+		self.change_x =1
+	def update(self):
+		
+
+		if self.world.Frame % 60 == 0:
+			print(self.world.Frame)
+			now_position = Map.convertToBlock(self,self.center_x,self.center_y,self.width,self.height)
+
+			if self.change_x <0 and now_position["x"][0] == 0:
+				self.change_x = 5
+			elif self.change_x > 0 and now_position["x"][-1] == len(self.world.map.map_list)-1:
+				self.change_x = -5
+				
+			if self.change_x < 0:
+				self.center_x = Map.convertToCenter(self,[now_position["x"][0]-1,now_position["x"][-1]-1])
+				self.CHANGE_LEFT = not self.CHANGE_LEFT
+				if self.CHANGE_LEFT:
+					self.texture = self.texture_left1
+				else:
+					self.texture = self.texture_left
+			
+			if self.change_x > 0:
+				self.center_x = Map.convertToCenter(self,[now_position["x"][0]+1,now_position["x"][-1]+1])
+				self.CHANGE_RIGHT = not self.CHANGE_RIGHT
+				if self.CHANGE_RIGHT:
+					self.texture = self.texture_right1
+				else:
+					self.texture = self.texture_right
+			
+
+		
+		
 class Carrot(arcade.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
