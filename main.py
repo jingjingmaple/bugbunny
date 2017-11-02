@@ -1,13 +1,14 @@
 import arcade
 from pprint import pprint
 from var_dump import var_dump
-
+from character import Player
 
 
 SPRITE_SCALING = 1
 TILE_SCALING = 1
 SCREEN_WIDTH = 1152
 SCREEN_HEIGHT = 864
+blocksize = 48
 # Physics
 
 JUMP_SPEED = 14
@@ -15,8 +16,8 @@ GRAVITY = 0.5
 MOVEMENT_SPEED = 5
 FRAME = 0
 LAST_FRAME = 0
-CHANGE_LEFT = True
-CHANGE_RIGHT = True
+#CHANGE_LEFT = True
+#CHANGE_RIGHT = True
 LAST_X=0
 LAST_Y=0
 class WorldWindow(arcade.Window):
@@ -25,6 +26,11 @@ class WorldWindow(arcade.Window):
 
 		arcade.set_background_color(arcade.color.WHITE_SMOKE)
 		self.all_sprites_list = None
+		self.fucking_wall_list = [[]]
+		for x in range(0,24):
+			self.fucking_wall_list.append([])
+			for y in range(0,18):
+				self.fucking_wall_list[x].append(None)
 
 		self.player_sprite = None
 		self.score = 0
@@ -38,7 +44,7 @@ class WorldWindow(arcade.Window):
 		self.all_sprites_list.update()
 
 	def on_key_press(self, key, modifiers):
-		global CHANGE_LEFT, CHANGE_RIGHT
+		#global CHANGE_LEFT, CHANGE_RIGHT
 		'''if key == arcade.key.UP:
 			if self.physics_engine.can_jump():
 				self.player_sprite.change_y = JUMP_SPEED
@@ -57,12 +63,13 @@ class WorldWindow(arcade.Window):
 		'''
 		if key == arcade.key.LEFT:
 			self.player_sprite.center_x -= 96
+			#self.player_sprite.angle = 35
 			self.player_sprite.change_x = -5
-			CHANGE_LEFT = not CHANGE_LEFT
+			self.player_sprite.CHANGE_LEFT = not self.player_sprite.CHANGE_LEFT
 		elif key == arcade.key.RIGHT:
 			self.player_sprite.center_x += 96
 			self.player_sprite.change_x = 5
-			CHANGE_RIGHT = not CHANGE_RIGHT
+			self.player_sprite.CHANGE_RIGHT = not self.player_sprite.CHANGE_RIGHT
 	def on_key_release(self, key, modifiers):
  
 		if key == arcade.key.UP or key == arcade.key.DOWN:
@@ -77,11 +84,15 @@ class WorldWindow(arcade.Window):
 		self.gate_list = arcade.SpriteList()
 
 
+		self.map_list = [[]]
+		
+
 		self.score = 0
 		self.player_sprite = Player()
 		self.player_sprite.center_x = 48
 		self.player_sprite.center_y = 144
 		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
+		self.add_map(self.player_sprite.center_x,self.player_sprite.center_y,self.player_sprite.width,self.player_sprite.height,"player")
 		self.all_sprites_list.append(self.player_sprite)
 		
 
@@ -93,6 +104,8 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 24
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,24,wall.width,wall.height,"floor")
+
 
 		for x in range(24, 1152, 48):
 			wall = arcade.Sprite("images/tileset/grassMid.png", 1) #128 to 64x64
@@ -100,6 +113,7 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 72
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,72,wall.width,wall.height,"floor")
 		
 		#gate
 			#base floor
@@ -108,6 +122,7 @@ class WorldWindow(arcade.Window):
 			stair.center_y = 168
 			self.all_sprites_list.append(stair)
 			self.stair_list.append(stair)
+			self.add_map(240,168,stair.width,stair.height,"gate")
 
 			#second floor
 			stair = arcade.Sprite("images/tileset/gate.png",1)
@@ -115,6 +130,7 @@ class WorldWindow(arcade.Window):
 			stair.center_y = 360
 			self.all_sprites_list.append(stair)
 			self.stair_list.append(stair)
+			self.add_map(48,360,stair.width,stair.height,"gate")
 
 			#third floor
 			stair = arcade.Sprite("images/tileset/gate.png",1)
@@ -122,6 +138,7 @@ class WorldWindow(arcade.Window):
 			stair.center_y = 552
 			self.all_sprites_list.append(stair)
 			self.stair_list.append(stair)
+			self.add_map(144,552,stair.width,stair.height,"gate")
 
 			#fourth floor
 			stair = arcade.Sprite("images/tileset/gate.png",1)
@@ -129,6 +146,7 @@ class WorldWindow(arcade.Window):
 			stair.center_y = 744
 			self.all_sprites_list.append(stair)
 			self.stair_list.append(stair)
+			self.add_map(48,744,stair.width,stair.height,"gate")
 
 		#upper pedan
 		for x in range(24, 1152, 48):
@@ -137,56 +155,101 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 840
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,840,wall.width,wall.height,"floor")
 
 
 		#first floor
 		#-----------------------------------------------------------
-		stair = arcade.Sprite("images/stair3.png",0.8)
-		stair.center_x = 408
-		stair.center_y = 140
-		self.all_sprites_list.append(stair)
-		self.stair_list.append(stair)
-
-		'''wall = arcade.Sprite("images/stair.png", 0.8) #64x64 to 32x32
-		wall.center_x = 356
-		wall.center_y = 112
-		self.all_sprites_list.append(wall)
-		self.wall_list.append(wall)'''
-
-		for x in range(552, 816, 48):
-			wall = arcade.Sprite("images/tileset/brick.png", 1) #64x64 to 32x32
-			wall.center_x = x
-			wall.center_y = 264
-			self.all_sprites_list.append(wall)
-			self.wall_list.append(wall)
-
-		stair = arcade.Sprite("images/stair2.png",0.8)
-		stair.center_x = 784
-		stair.center_y = 140
-		self.all_sprites_list.append(stair)
-		self.stair_list.append(stair)
-		#-----------------------------------------
-		stair = arcade.Sprite("images/stair3.png",0.8)
-		stair.center_x = 308
-		stair.center_y = 288
-		self.all_sprites_list.append(stair)
-		self.stair_list.append(stair)
-
-
 		for x in range(24, 288, 48):
 			wall = arcade.Sprite("images/tileset/brick.png", 1) #64x64 to 32x32
 			wall.center_x = x
 			wall.center_y = 264
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,264,wall.width,wall.height,"floor")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 408
+		stair.center_y = 120
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(408,120,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 456
+		stair.center_y = 168
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(456,168,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 504
+		stair.center_y = 216
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(504,216,stair.width,stair.height,"stair")
 		
-		#second floor
+		for x in range(552, 816, 48):
+			wall = arcade.Sprite("images/tileset/brick.png", 1) #64x64 to 32x32
+			wall.center_x = x
+			wall.center_y = 264
+			self.all_sprites_list.append(wall)
+			self.wall_list.append(wall)
+			self.add_map(x,264,wall.width,wall.height,"floor")
+
+		stair = arcade.Sprite("images/tileset/stair_right.png",1)
+		stair.center_x = 936
+		stair.center_y = 120
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(936,120,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_right.png",1)
+		stair.center_x = 888
+		stair.center_y = 168
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(888,168,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_right.png",1)
+		stair.center_x = 840
+		stair.center_y = 216
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(840,216,stair.width,stair.height,"stair")
+			
+		#----------------------- second floor ---------------------------------------
 		for x in range(24, 192, 48):
 			wall = arcade.Sprite("images/tileset/brick.png", 1) #64x64 to 32x32
 			wall.center_x = x
 			wall.center_y = 456
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,456,wall.width,wall.height,"floor")\
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 408
+		stair.center_y = 408
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(408,408,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 312
+		stair.center_y = 312
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(312,312,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 360
+		stair.center_y = 360
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(360,360,stair.width,stair.height,"stair")
+
+		
+
 
 		for x in range(456, 1056, 48):
 			wall = arcade.Sprite("images/tileset/brick.png", 1) #32x32
@@ -194,20 +257,37 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 456
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,456,wall.width,wall.height,"floor")
 
-		#third floor
+		#--------------------------------- third floor -----------------------------------------------------
 		for x in range(24, 384, 48):
 			wall = arcade.Sprite("images/tileset/brick.png", 1) #64x64 to 32x32
 			wall.center_x = x
 			wall.center_y = 648
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,648,wall.width,wall.height,"floor")
 
-		stair = arcade.Sprite("images/stair3.png",0.8)
-		stair.center_x = 628
-		stair.center_y = 440
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 696
+		stair.center_y = 600
 		self.all_sprites_list.append(stair)
 		self.stair_list.append(stair)
+		self.add_map(696,600,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 600
+		stair.center_y = 504
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(600,504,stair.width,stair.height,"stair")
+
+		stair = arcade.Sprite("images/tileset/stair_left.png",1)
+		stair.center_x = 648
+		stair.center_y = 552
+		self.all_sprites_list.append(stair)
+		self.stair_list.append(stair)
+		self.add_map(648,552,stair.width,stair.height,"stair")
 
 		for x in range(744, 1056, 48):
 			wall = arcade.Sprite("images/tileset/brick.png", 1) #32x32
@@ -215,6 +295,7 @@ class WorldWindow(arcade.Window):
 			wall.center_y = 648
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
+			self.add_map(x,648,wall.width,wall.height,"floor")
 
 
 		'''self.physics_engine = \
@@ -232,54 +313,20 @@ class WorldWindow(arcade.Window):
 		for _stair in self.stair_list:
 			if x_left < (_stair.center_x+(_stair.width/2)):
 				return True
-
-class Player(arcade.Sprite):
-	def __init__(self):
-		super().__init__()
-		self.texture_left = arcade.load_texture("images/tileset/rabbit1.png", mirrored=True, scale=SPRITE_SCALING)
-		self.texture_right = arcade.load_texture("images/tileset/rabbit1.png", scale=SPRITE_SCALING)
-		self.texture_left1 = arcade.load_texture("images/tileset/rabbit2.png", mirrored=True, scale=SPRITE_SCALING)
-		self.texture_right1 = arcade.load_texture("images/tileset/rabbit2.png", scale=SPRITE_SCALING)
-		self.texture = self.texture_right
-	def update(self):
-		global FRAME, LAST_FRAME, CHANGE_LEFT,CHANGE_RIGHT, LAST_X, LAST_Y
-		#self.center_x += self.change_x
-		#self.center_y += self.change_y
-
-
-
-		if self.center_x != LAST_X or self.center_y != LAST_Y:
-			print(self.center_x,self.center_y)
-		LAST_X = self.center_x
-		LAST_Y = self.center_y
-		if self.change_x < 0:
-			if CHANGE_LEFT:
-				self.texture = self.texture_left1
-			else:
-				self.texture = self.texture_left
-			#if FRAME%30==0:
-			 #CHANGE_LEFT = not CHANGE_LEFT
-			
-			
-		if self.change_x > 0:
-			if CHANGE_RIGHT:
-				self.texture = self.texture_right1
-			else:
-				self.texture = self.texture_right
-			#if FRAME%30==0:
-			 #CHANGE_RIGHT = not CHANGE_RIGHT
-
-		if self.left < 0:
-			self.left = 0
-		elif self.right > SCREEN_WIDTH - 1:
-			self.right = SCREEN_WIDTH - 1
-
-		if self.bottom < 0:
-			self.bottom = 0
-		elif self.top > SCREEN_HEIGHT - 1:
-			self.top = SCREEN_HEIGHT - 1
-		LAST_FRAME = FRAME
-		FRAME +=1
+				
+	def add_map(self,center_x,center_y,width,height,typename):
+		if width == blocksize and height == blocksize:
+			x = int(center_x/blocksize)
+			y = int(center_y/blocksize)
+			self.fucking_wall_list[x][y] = {"x":center_x,"y":center_y,"type":typename}
+		else:
+			a1 = center_x - (width/2)
+			a2 = center_x + (width/2)
+			b1 = center_y - (height/2)
+			b2 = center_y + (height/2)
+			for k in range(int(a1/blocksize),int(a2/blocksize)):
+				for ky in range(int(b1/blocksize),int(b2/blocksize)):
+					self.fucking_wall_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
 
 
 
@@ -287,6 +334,23 @@ def main():
 
 	window = WorldWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
 	window.setup()
+	jing = window.fucking_wall_list
+	var_dump(jing)
+	print(len(jing))
+	for s in jing:
+		for y in s:
+			j = 9
+			if y != None:
+				if y["type"] == "floor":
+					j=0
+				elif y["type"] == "stair":
+					j=1
+				elif y["type"] == "gate":
+					j=2
+			print(str(j)+" ",end='')
+		print()
+	'''for x in jing:
+		print(x.center_x,x.center_y)'''
 	arcade.run()
 
 if __name__ == "__main__":
