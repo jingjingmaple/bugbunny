@@ -1,7 +1,7 @@
 import arcade
 from pprint import pprint
 from var_dump import var_dump
-from character import Player
+from character import Player, Map
 
 
 SPRITE_SCALING = 1
@@ -50,11 +50,15 @@ class WorldWindow(arcade.Window):
 				self.player_sprite.change_y = JUMP_SPEED
 		'''
 
-		if key == arcade.key.UP:
+		'''if key == arcade.key.UP:
 			self.player_sprite.change_y = MOVEMENT_SPEED
 		elif key == arcade.key.DOWN:
-			self.player_sprite.change_y = -MOVEMENT_SPEED
-	
+			self.player_sprite.change_y = -MOVEMENT_SPEED'''
+
+		'''if key == arcade.key.UP:
+			self.player_sprite.center_y += 48
+		elif key == arcade.key.DOWN:
+			self.player_sprite.center_y -= 48'''
 		'''
 		elif key == arcade.key.LEFT:
 			self.player_sprite.change_x = -MOVEMENT_SPEED
@@ -72,8 +76,12 @@ class WorldWindow(arcade.Window):
 			self.player_sprite.CHANGE_RIGHT = not self.player_sprite.CHANGE_RIGHT
 	def on_key_release(self, key, modifiers):
  
-		if key == arcade.key.UP or key == arcade.key.DOWN:
-			self.player_sprite.change_y = 0
+		if key == arcade.key.UP:
+			self.player_sprite.center_y += 48
+			self.player_sprite.center_x += 48
+			print("fuck")
+		elif key == arcade.key.DOWN:
+			self.player_sprite.center_y -= 48
 		'''elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
 			self.player_sprite.change_x = 0'''
 	def setup(self):
@@ -84,7 +92,7 @@ class WorldWindow(arcade.Window):
 		self.gate_list = arcade.SpriteList()
 
 
-		self.map_list = [[]]
+		self.map = Map()
 		
 
 		self.score = 0
@@ -306,27 +314,24 @@ class WorldWindow(arcade.Window):
 		'''print(len(self.wall_list))
 		print(self.wall_list[10].height)'''
 		
-		
 
-
-	def stair(x_left,y_right):
-		for _stair in self.stair_list:
-			if x_left < (_stair.center_x+(_stair.width/2)):
-				return True
 				
 	def add_map(self,center_x,center_y,width,height,typename):
 		if width == blocksize and height == blocksize:
 			x = int(center_x/blocksize)
 			y = int(center_y/blocksize)
-			self.fucking_wall_list[x][y] = {"x":center_x,"y":center_y,"type":typename}
+			#self.fucking_wall_list[x][y] = {"x":center_x,"y":center_y,"type":typename}
+			self.map.map_list[x][y] = {"x":center_x,"y":center_y,"type":typename}
 		else:
+			#240x 168y
 			a1 = center_x - (width/2)
 			a2 = center_x + (width/2)
 			b1 = center_y - (height/2)
 			b2 = center_y + (height/2)
 			for k in range(int(a1/blocksize),int(a2/blocksize)):
 				for ky in range(int(b1/blocksize),int(b2/blocksize)):
-					self.fucking_wall_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
+					#self.fucking_wall_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
+					self.map.map_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
 
 
 
@@ -334,21 +339,23 @@ def main():
 
 	window = WorldWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
 	window.setup()
-	jing = window.fucking_wall_list
-	var_dump(jing)
-	print(len(jing))
-	for s in jing:
-		for y in s:
+	jing = window.map.map_list
+	#var_dump(jing)
+	#print(len(jing))
+	
+	'''for a in range(0,len(jing)):
+		print(str(a)+": ",end='')
+		for p in range(0,len(jing[a])):
 			j = 9
-			if y != None:
-				if y["type"] == "floor":
+			if jing[a][p] != None:
+				if jing[a][p]["type"] == "floor":
 					j=0
-				elif y["type"] == "stair":
+				elif jing[a][p]["type"] == "stair":
 					j=1
-				elif y["type"] == "gate":
+				elif jing[a][p]["type"] == "gate":
 					j=2
 			print(str(j)+" ",end='')
-		print()
+		print()'''
 	'''for x in jing:
 		print(x.center_x,x.center_y)'''
 	arcade.run()

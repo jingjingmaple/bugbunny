@@ -14,6 +14,34 @@ LAST_FRAME = 0
 #CHANGE_RIGHT = True
 LAST_X=0
 LAST_Y=0
+class Map():
+	def __init__(self):
+		self.map_list = [[]]
+		for x in range(0,24):
+			self.map_list.append([])
+			for y in range(0,18):
+				self.map_list[x].append(None)
+	def convertToCenter(x):
+		start_x = x[0]*48
+		end_x = (x[-1]*48) + 48
+		center_x = (start_x + end_x)/2
+		return x
+
+	def movement(self,_object,x,y,_type,direction):
+		if _type == "player":
+			'''if direction == "UP":
+				
+			elif direction == "DOWN"'''
+
+			if direction == "LEFT":
+				if self.map_list[x[0]-len(x)][y[0]-1]["type"] == "floor":
+					_object.center_x = self.convertToCenter([x[0]-len(x),x[-1]-len(x)])
+			elif direction == "RIGHT":
+				if self.map_list[x[-1]+len(x)][y[0]-1]["type"] == "floor":
+					_object.center_x = self.convertToCenter([x[0]+len(x),x[-1]+len(x)])
+
+		
+
 class Player(arcade.Sprite):
 	def __init__(self):
 		super().__init__()
@@ -59,3 +87,4 @@ class Player(arcade.Sprite):
 			self.top = SCREEN_HEIGHT - 1
 		LAST_FRAME = FRAME
 		FRAME +=1
+
