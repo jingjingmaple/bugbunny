@@ -23,7 +23,7 @@ LAST_Y=0
 class WorldWindow(arcade.Window):
 	def __init__(self, width, height):
 		super().__init__(width, height)
-
+		self.gameRunState = True
 		arcade.set_background_color(arcade.color.WHITE_SMOKE)
 		self.all_sprites_list = None
 		self.fucking_wall_list = [[]]
@@ -40,60 +40,33 @@ class WorldWindow(arcade.Window):
 	def on_draw(self):
 		arcade.start_render()
 		self.all_sprites_list.draw()
+		if not self.gameRunState:
+			self.game_over()
+
 	def update(self, delta_time):
 		self.Frame += 1
 		#self.physics_engine.update()
 		self.all_sprites_list.update()
 
 		if arcade.check_for_collision(self.player_sprite,self.enemy_sprite):
-			print("Fuck Fuck Fuck")
-			arcade.render_text(self.t1, 500, 400)
+			self.gameRunState = False
 
 	def on_key_press(self, key, modifiers):
-		#global CHANGE_LEFT, CHANGE_RIGHT
-		'''if key == arcade.key.UP:
-			if self.physics_engine.can_jump():
-				self.player_sprite.change_y = JUMP_SPEED
-		'''
-
-		'''if key == arcade.key.UP:
-			self.player_sprite.change_y = MOVEMENT_SPEED
-		elif key == arcade.key.DOWN:
-			self.player_sprite.change_y = -MOVEMENT_SPEED'''
-
-		'''if key == arcade.key.UP:
-			self.player_sprite.center_y += 48
-		elif key == arcade.key.DOWN:
-			self.player_sprite.center_y -= 48'''
-		'''
-		elif key == arcade.key.LEFT:
-			self.player_sprite.change_x = -MOVEMENT_SPEED
-		elif key == arcade.key.RIGHT:
-			self.player_sprite.change_x = MOVEMENT_SPEED
-		'''
+		
 		if key == arcade.key.LEFT:
-			#self.player_sprite.center_x -= 96
-			#self.player_sprite.angle = 35
-			#self.player_sprite.change_x = -5
-			#self.player_sprite.CHANGE_LEFT = not self.player_sprite.CHANGE_LEFT
 			self.map.movement(self.player_sprite,"player","LEFT")
+
 		elif key == arcade.key.RIGHT:
-			#self.player_sprite.center_x += 96
-			#self.player_sprite.change_x = 5
-			#self.player_sprite.CHANGE_RIGHT = not self.player_sprite.CHANGE_RIGHT
 			self.map.movement(self.player_sprite,"player","RIGHT")
+
 	def on_key_release(self, key, modifiers):
  
 		if key == arcade.key.UP:
-			'''self.player_sprite.center_y += 48
-			self.player_sprite.center_x += 48
-			print("fuck")'''
 			self.map.movement(self.player_sprite,"player","UP")
+
 		elif key == arcade.key.DOWN:
-			#self.player_sprite.center_y -= 48
 			self.map.movement(self.player_sprite,"player","DOWN")
-		'''elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-			self.player_sprite.change_x = 0'''
+		
 	def setup(self):
 		self.map = Map()
 		self.all_sprites_list = arcade.SpriteList()
@@ -110,14 +83,6 @@ class WorldWindow(arcade.Window):
 			self.carrot_list.append({"obj":carrot,"x":_center_x,"y":_center_y})
 			self.all_sprites_list.append(carrot)
 			self.add_map(_center_x,_center_y,carrot.width,carrot.height,"carrot",carrot)
-
-		
-		
-
-		self.score = 0
-		
-		
-		
 
 
 		#base floor
@@ -329,13 +294,6 @@ class WorldWindow(arcade.Window):
 			self.add_map(x,648,wall.width,wall.height,"floor",wall)
 
 
-		'''self.physics_engine = \
-			arcade.PhysicsEnginePlatformer(self.player_sprite,
-										   self.wall_list,
-										   gravity_constant=GRAVITY)'''
-		
-		'''print(len(self.wall_list))
-		print(self.wall_list[10].height)'''
 		self.player_sprite = Player(self)
 		self.player_sprite.center_x = 48
 		self.player_sprite.center_y = 144
@@ -345,19 +303,17 @@ class WorldWindow(arcade.Window):
 
 
 		self.enemy_sprite = Enemy(self)
-		self.enemy_sprite.center_x = 48
+		self.enemy_sprite.center_x = 144
 		self.enemy_sprite.center_y = 144
 		#self.player_sprite.center_y = SCREEN_HEIGHT / 2
 		self.add_map(self.enemy_sprite.center_x,self.enemy_sprite.center_y,self.enemy_sprite.width,self.enemy_sprite.height,"enemy",self.enemy_sprite)
 		self.all_sprites_list.append(self.enemy_sprite)
 				
-		self.t1 = arcade.create_text("Simple line of text in 12 point", arcade.color.BLACK, 60)
 
 	def add_map(self,center_x,center_y,width,height,typename,obj):
 		if width == blocksize and height == blocksize:
 			x = int(center_x/blocksize)
 			y = int(center_y/blocksize)
-			#self.fucking_wall_list[x][y] = {"x":center_x,"y":center_y,"type":typename}
 			self.map.map_list[x][y] = {"x":center_x,"y":center_y,"type":typename,"obj":obj}
 		else:
 			#240x 168y
@@ -367,8 +323,11 @@ class WorldWindow(arcade.Window):
 			b2 = center_y + (height/2)
 			for k in range(int(a1/blocksize),int(a2/blocksize)):
 				for ky in range(int(b1/blocksize),int(b2/blocksize)):
-					#self.fucking_wall_list[k][ky] = {"x":center_x,"y":center_y,"type":typename}
 					self.map.map_list[k][ky] = {"x":center_x,"y":center_y,"type":typename,"obj":obj}
+	
+	def game_over(self):
+		arcade.draw_text("Game Over", 500, 400, arcade.color.BLACK, 54)
+
 
 
 
@@ -380,22 +339,6 @@ def main():
 	#var_dump(window.map.gate_list2)
 	#var_dump(jing)
 	#print(len(jing))
-	
-	'''for a in range(0,len(jing)):
-		print(str(a)+": ",end='')
-		for p in range(0,len(jing[a])):
-			j = 9
-			if jing[a][p] != None:
-				if jing[a][p]["type"] == "floor":
-					j=0
-				elif jing[a][p]["type"] == "stair":
-					j=1
-				elif jing[a][p]["type"] == "gate":
-					j=2
-			print(str(j)+" ",end='')
-		print()'''
-	'''for x in jing:
-		print(x.center_x,x.center_y)'''
 	arcade.run()
 
 if __name__ == "__main__":
