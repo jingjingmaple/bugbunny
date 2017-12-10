@@ -1,6 +1,6 @@
 import arcade
 from pprint import pprint
-from var_dump import var_dump
+#from var_dump import var_dump
 from character import Player, Map, Carrot, Enemy
 
 
